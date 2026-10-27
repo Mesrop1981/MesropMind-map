@@ -1,0 +1,31 @@
+name: Build MesMind-Map Windows
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Клонирование репозитория
+        uses: actions/checkout@v4
+
+      - name: Установка Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Установка библиотек сборщика
+        run: npm install
+
+      - name: Компиляция установщика Windows
+        run: npx electron-builder --win
+
+      - name: Сохранение файла установщика
+        uses: actions/upload-artifact@v4
+        with:
+          name: MesMind-Map-1.0-Installer
+          path: dist/*.exe
