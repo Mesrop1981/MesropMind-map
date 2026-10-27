@@ -17,22 +17,21 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-
-      - name: Установка зависимостей
-        run: |
-          npm install --legacy-peer-deps
 
       - name: Сборка веб-интерфейса
+        working-directory: ./web
         run: |
-          npm run build --if-present
+          npm install --legacy-peer-deps
+          npm run build
 
-      - name: Компиляция установщика Windows
+      - name: Упаковка в Windows EXE (Electron)
+        working-directory: ./web
         run: |
-          npx electron-builder --win --config.win.target=nsis
+          npm install -D electron electron-builder
+          npx electron-builder --win nsis --config.productName="MesMind-Map 1.0" --config.appId="com.mesmind.map" --config.directories.output="dist-electron"
 
-      - name: Сохранение готового установщика
+      - name: Сохранение установщика
         uses: actions/upload-artifact@v4
         with:
           name: MesMind-Map-1.0-Installer
-          path: dist/*.exe
+          path: web/dist-electron/*.exe
