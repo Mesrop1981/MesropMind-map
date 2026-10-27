@@ -18,19 +18,50 @@ jobs:
         with:
           node-version: 20
 
-      - name: Сборка веб-интерфейса
-        working-directory: ./web
+      - name: Сборка библиотеки ядра
         run: |
+          cd simple-mind-map
+          npm install --legacy-peer-deps
+          npm run build --if-present
+
+      - name: Сборка русского веб-интерфейса
+        run: |
+          cd web
           npm install --legacy-peer-deps
           npm run build
 
-      - name: Упаковка в Windows EXE (Electron)
-        working-directory: ./web
+      - name: Создание точки входа Electron
         run: |
-          npm install -D electron electron-builder
-          npx electron-builder --win nsis --config.productName="MesMind-Map 1.0" --config.appId="com.mesmind.map" --config.directories.output="dist-electron"
+          @'
+          const { app, BrowserWindow } = require('electron');
+          const path = require('path');
 
-      - name: Сохранение установщика
+          function createWindow() {
+            const win = new BrowserWindow({
+              width: 1400,
+              height: 900,
+              title: "MesMind-Map 1.0",
+              webPreferences: {
+                nodeIntegration: true,
+                contextIsolation: false
+              }
+            });
+            win.loadFile(path.join(__dirname, 'dist', 'index.html'));
+          }
+
+          app.whenReady().then(createWindow);
+          app.on('window-all-closed', () => {
+            if (process.platform !== 'darwin') app.quit();
+          });
+          '@ | Set-Content -Path web\main.js
+
+      - name: Компиляция установщика Windows
+        run: |
+          cd web
+          npm install -D electron electron-builder
+          npx electron-builder --win nsis --config.productName="MesMind-Map 1.0" --config.appId="com.mesmind.map" --config.directories.output="dist-electron" --config.extraMetadata.main="main.js"
+
+      - name: Выгрузка готового установщика
         uses: actions/upload-artifact@v4
         with:
           name: MesMind-Map-1.0-Installer
