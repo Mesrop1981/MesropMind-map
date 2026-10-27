@@ -1,0 +1,25 @@
+{
+  "name": "mesmind-map",
+  "productName": "MesMind-Map 1.0",
+  "version": "1.0.0",
+  "description": "Приложение ментальных карт",
+  "main": "main.js",
+  "scripts": {
+    "build": "electron-builder --win"
+  },
+  "build": {
+    "appId": "com.mesmind.map",
+    "productName": "MesMind-Map 1.0",
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  }
+}
