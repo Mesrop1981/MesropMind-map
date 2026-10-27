@@ -1,4 +1,4 @@
-nname: Build MesMind-Map Windows
+name: Build MesMind-Map Windows
 
 on:
   push:
