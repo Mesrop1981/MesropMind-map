@@ -1,4 +1,4 @@
-name: Build MesMind-Map Windows
+nname: Build MesMind-Map Windows
 
 on:
   push:
@@ -17,14 +17,21 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
 
-      - name: Установка библиотек сборщика
-        run: npm install
+      - name: Установка зависимостей
+        run: |
+          npm install --legacy-peer-deps
+
+      - name: Сборка веб-интерфейса
+        run: |
+          npm run build --if-present
 
       - name: Компиляция установщика Windows
-        run: npx electron-builder --win
+        run: |
+          npx electron-builder --win --config.win.target=nsis
 
-      - name: Сохранение файла установщика
+      - name: Сохранение готового установщика
         uses: actions/upload-artifact@v4
         with:
           name: MesMind-Map-1.0-Installer
